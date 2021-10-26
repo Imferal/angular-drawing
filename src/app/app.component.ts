@@ -11,9 +11,9 @@ export class AppComponent implements AfterViewInit {
   /** Находим канвас в шаблоне */
   @ViewChild('canvas', {static: true})
   canvas!: ElementRef<HTMLCanvasElement>
-  /** Находим инпут размера линии */
-  @ViewChild('range', {static: true})
-  range!: ElementRef<HTMLInputElement>
+  // /** Находим инпут размера линии */
+  // @ViewChild('range', {static: true})
+  // range!: ElementRef<HTMLInputElement>
   /** Находим инпут цвета */
   @ViewChild('color', {static: true})
   color!: ElementRef<HTMLInputElement>
@@ -26,7 +26,7 @@ export class AppComponent implements AfterViewInit {
   mouseOut$!: Observable<any>
   mouseUp$!: Observable<any>
   drawing$!: Observable<any>
-  lineWidth$!: Observable<any>
+  brushSize: number = 2;
 
   ngAfterViewInit() {
     this.ctx = this.canvas.nativeElement.getContext('2d')!;
@@ -45,27 +45,17 @@ export class AppComponent implements AfterViewInit {
     this.mouseOut$ = fromEvent(this.canvas.nativeElement, 'mouseout')
     this.mouseUp$ = fromEvent(this.canvas.nativeElement, 'mouseup')
 
-    /** Стримы для параметров */
-    this.lineWidth$ = fromEvent(this.range.nativeElement, 'input')
-      .pipe(
-        map(e => (e.target as HTMLInputElement).value
-        )
-      )
-
     /** Стрим с координатами */
     this.drawing$ = this.mouseDown$.pipe(
-      withLatestFrom(this.lineWidth$, (_, lineWidth) => {
-        return {
-          lineWidth
-        }
-      }),
-      switchMap((options) => {
-        console.log(options)
+      switchMap(() => {
         return this.mouseMove$.pipe(
           /** Возвращаем координаты в удобном формате */
           map(e => ({
             x: e.offsetX,
             y: e.offsetY,
+            options: {
+              lineWidth: this.brushSize
+            }
           })),
           /** Сохраняем предыдущие координаты */
           pairwise(),
@@ -79,6 +69,10 @@ export class AppComponent implements AfterViewInit {
 
     /** Рисуем по координатам */
     this.drawing$.subscribe(([from, to]) => {
+      /** Получаем из опций аргумента размер линии */
+      const {lineWidth} = from.options
+      /** Меняем размер линии в контексте */
+      this.ctx!.lineWidth = lineWidth
       /** Начинаем новую линию */
       this.ctx?.beginPath()
       /** Координаты начала линии */
