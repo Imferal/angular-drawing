@@ -1,0 +1,57 @@
+<button mat-button [mat-menu-trigger-for]="file">File</button>
+<button mat-button [mat-menu-trigger-for]="brush">Brush</button>
+<button mat-button [mat-menu-trigger-for]="canvas">Canvas</button>
+
+<mat-menu #file="matMenu">
+  <button mat-menu-item>New</button>
+  <button mat-menu-item>Save</button>
+  <button mat-menu-item>Load</button>
+</mat-menu>
+
+<mat-menu #brush="matMenu">
+  <button mat-menu-item [mat-menu-trigger-for]="brushSize">Size</button>
+  <button mat-menu-item [mat-menu-trigger-for]="brushColor">Color</button>
+</mat-menu>
+
+<mat-menu #canvas="matMenu">
+  <button mat-menu-item (click)="canvasService.clear()">Clear</button>
+  <button mat-menu-item [mat-menu-trigger-for]="canvasSize">Size</button>
+  <button mat-menu-item [mat-menu-trigger-for]="canvasColor">Color</button>
+</mat-menu>
+
+<mat-menu #brushSize>
+  <button mat-menu-item>1</button>
+  <button mat-menu-item>2</button>
+  <button mat-menu-item>4</button>
+  <button mat-menu-item>6</button>
+  <button mat-menu-item>10</button>
+</mat-menu>
+
+<mat-menu #brushColor>
+  <button mat-menu-item>Black</button>
+  <button mat-menu-item>White</button>
+  <button mat-menu-item>Red</button>
+  <button mat-menu-item>Orange</button>
+  <button mat-menu-item>Yellow</button>
+  <button mat-menu-item>Green</button>
+  <button mat-menu-item>Blue</button>
+  <button mat-menu-item>Purple</button>
+</mat-menu>
+
+<mat-menu #canvasSize>
+  <button mat-menu-item>150 x 150</button>
+  <button mat-menu-item>200 x 300</button>
+  <button mat-menu-item>400 x 600</button>
+  <button mat-menu-item>800 x 1200</button>
+</mat-menu>
+
+<mat-menu #canvasColor>
+  <button mat-menu-item>Black</button>
+  <button mat-menu-item>White</button>
+  <button mat-menu-item>Red</button>
+  <button mat-menu-item>Orange</button>
+  <button mat-menu-item>Yellow</button>
+  <button mat-menu-item>Green</button>
+  <button mat-menu-item>Blue</button>
+  <button mat-menu-item>Purple</button>
+</mat-menu>

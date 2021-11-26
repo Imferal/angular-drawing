@@ -31,8 +31,8 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/theme.scss"
             ],
             "scripts": []
           },
@@ -105,9 +105,61 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "corelib": {
+      "projectType": "library",
+      "root": "projects/corelib",
+      "sourceRoot": "projects/corelib/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/corelib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/corelib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/corelib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/corelib/src/test.ts",
+            "tsConfig": "projects/corelib/tsconfig.spec.json",
+            "karmaConfig": "projects/corelib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/corelib/**/*.ts",
+              "projects/corelib/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "angular-drawing"
+  "defaultProject": "angular-drawing",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
