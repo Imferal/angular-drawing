@@ -3,7 +3,7 @@
 <button mat-button [mat-menu-trigger-for]="canvas">Canvas</button>
 
 <mat-menu #file="matMenu">
-  <button mat-menu-item>New</button>
+  <button mat-menu-item (click)="canvasService.clear()">New</button>
   <button mat-menu-item>Save</button>
   <button mat-menu-item>Load</button>
 </mat-menu>
@@ -14,28 +14,31 @@
 </mat-menu>
 
 <mat-menu #canvas="matMenu">
-  <button mat-menu-item (click)="canvasService.clear()">Clear</button>
   <button mat-menu-item [mat-menu-trigger-for]="canvasSize">Size</button>
   <button mat-menu-item [mat-menu-trigger-for]="canvasColor">Color</button>
 </mat-menu>
 
 <mat-menu #brushSize>
-  <button mat-menu-item>1</button>
-  <button mat-menu-item>2</button>
-  <button mat-menu-item>4</button>
-  <button mat-menu-item>6</button>
-  <button mat-menu-item>10</button>
+  <button mat-menu-item (click)="brushService.brushSize = 1">1</button>
+  <button mat-menu-item (click)="brushService.brushSize = 2">2</button>
+  <button mat-menu-item (click)="brushService.brushSize = 4">4</button>
+  <button mat-menu-item (click)="brushService.brushSize = 6">6</button>
+  <button mat-menu-item (click)="brushService.brushSize = 10">10</button>
+  <button mat-menu-item (click)="brushService.brushSize = 25">25</button>
+  <button mat-menu-item (click)="brushService.brushSize = 50">50</button>
+  <button mat-menu-item (click)="brushService.brushSize = 100">100</button>
+  <button mat-menu-item (click)="brushService.brushSize = 300">300</button>
 </mat-menu>
 
 <mat-menu #brushColor>
-  <button mat-menu-item>Black</button>
-  <button mat-menu-item>White</button>
-  <button mat-menu-item>Red</button>
-  <button mat-menu-item>Orange</button>
-  <button mat-menu-item>Yellow</button>
-  <button mat-menu-item>Green</button>
-  <button mat-menu-item>Blue</button>
-  <button mat-menu-item>Purple</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#000000'">Black</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#FFFFFF'">White</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#FF0000'">Red</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#FF9900'">Orange</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#FFF400'">Yellow</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#00FF00'">Green</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#0000FF'">Blue</button>
+  <button mat-menu-item (click)="brushService.brushColor = '#A000FF'">Purple</button>
 </mat-menu>
 
 <mat-menu #canvasSize>

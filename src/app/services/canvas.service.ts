@@ -10,16 +10,26 @@ export class CanvasService {
   rect!: DOMRect;
   scale!: number;
 
+  /** Цвет фона */
+  public canvasColor: string = '#FFFFFF';
+
   /** Очистка холста */
   public clear() {
     this.ctx!.clearRect(0, 0, this.rect.width, this.rect.height);
+    this.canvasColor = '#FFFFFF';
+  }
+
+  public fillCanvasWithColor() {
+    /** Заливаем */
+    this.ctx!.fillStyle = this.canvasColor;
+    this.ctx!.fillRect(0, 0, this.rect.width, this.rect.height);
   }
 
   /** Подготовка канваса */
   public setCanvas(canvasEl: HTMLCanvasElement) {
     this.ctx = canvasEl.getContext('2d')!;
-    /** Устанавливаем форму концов линий */
-    this.ctx.lineCap = 'round';
+    // /** Устанавливаем форму концов линий */
+    // this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.setLineDash([5]);
 
     /** Получаем размеры канваса - ширину, высоту, позицию на странице, координаты */

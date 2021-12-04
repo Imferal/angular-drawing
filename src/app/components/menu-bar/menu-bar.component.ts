@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BrushService } from '../../services/brush.service';
 import { CanvasService } from '../../services/canvas.service';
 
@@ -8,7 +8,7 @@ import { CanvasService } from '../../services/canvas.service';
   styleUrls: ['./menu-bar.component.scss'],
 })
 export class MenuBarComponent implements OnInit {
-  constructor(public canvasService: CanvasService) {}
+  constructor(public brushService: BrushService, public canvasService: CanvasService) {}
 
   ngOnInit(): void {
     console.log('Запуск menu-bar...');
