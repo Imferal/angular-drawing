@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 /** fromEvent - создаёт стрим из событий */
-import { fromEvent, Observable } from 'rxjs';
+import { fromEvent, Observable, tap } from 'rxjs';
 import { map, pairwise, switchMap, takeUntil } from 'rxjs/operators';
 import { BrushService } from '../../services/brush.service';
 import { CanvasService } from '../../services/canvas.service';
+import { FileService } from '../../services/file.service';
 
 @Component({
   selector: 'app-image-field',
@@ -23,7 +24,11 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
 
-  constructor(private brush: BrushService, private canvasService: CanvasService) {}
+  constructor(
+    private brush: BrushService,
+    private canvasService: CanvasService,
+    private fileService: FileService,
+  ) {}
 
   ngOnInit(): void {
     console.log('Запуск image-field...');
@@ -31,7 +36,9 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-    this.canvasService.setCanvas(canvasEl);
+    /** Отдаём найденный canvas в сервис для дальнейшей работы */
+    this.canvasService.canvasEl = canvasEl;
+    this.canvasService.setCanvas();
 
     /** Стримы для рисования */
     this.mouseMove$ = fromEvent<MouseEvent>(canvasEl, 'mousemove');
@@ -74,6 +81,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.canvasService.ctx?.fill('nonzero');
       this.canvasService.ctx?.stroke();
     });
+
     /** Стрим для рисования линий с координатами и параметрами */
     this.drawing$ = this.mouseDown$.pipe(
       /** Если мышка нажата И движется */
@@ -116,6 +124,12 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.canvasService.ctx?.lineTo(to.x, to.y);
       /** Отрисовываем линию по заданным параметрам */
       this.canvasService.ctx?.stroke();
+      /** Сохраняем состояние в историю изменений */
+      this.fileService.saveHistory(
+        this.canvasService.ctx!,
+        this.canvas.nativeElement.width,
+        this.canvas.nativeElement.height,
+      );
     });
   }
 }
