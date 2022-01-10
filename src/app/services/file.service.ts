@@ -17,13 +17,11 @@ export class FileService {
 
   /** Отменить последнее изменение изображения */
   public undo = (ctx: CanvasRenderingContext2D) => {
+    this.drawHistory.pop();
     if (this.drawHistory.length > 0) {
-      this.drawHistory.pop();
-      if (this.drawHistory.length > 0) {
-        ctx.putImageData(this.drawHistory[this.drawHistory.length - 1], 0, 0);
-      } else {
-        this.canvasService.fillCanvasWithColor('#FFFFFF');
-      }
+      ctx.putImageData(this.drawHistory[this.drawHistory.length - 1], 0, 0);
+    } else {
+      this.canvasService.fillCanvasWithColor('#FFFFFF');
     }
   };
 }
