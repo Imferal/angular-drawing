@@ -19,7 +19,7 @@
 </mat-menu>
 
 <button mat-button (click)="fileService.undo(canvasService.ctx!)">Undo</button>
-<button mat-button (click)="canvasService.undo()" disabled>Redo</button>
+<button mat-button disabled>Redo</button>
 
 <mat-menu #brushSize>
   <button mat-menu-item (click)="brushService.brushSize = 1">1</button>

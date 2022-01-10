@@ -55,9 +55,4 @@ export class CanvasService {
     this.canvasEl.height = this.rect.height * this.scale;
     this.ctx!.scale(this.scale, this.scale);
   }
-
-  /** Отменить последнее изменение */
-  public undo() {
-    console.log('undo pressed...');
-  }
 }

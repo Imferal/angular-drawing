@@ -124,6 +124,9 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.canvasService.ctx?.lineTo(to.x, to.y);
       /** Отрисовываем линию по заданным параметрам */
       this.canvasService.ctx?.stroke();
+    });
+
+    this.mouseUp$.subscribe(() => {
       /** Сохраняем состояние в историю изменений */
       this.fileService.saveHistory(
         this.canvasService.ctx!,
