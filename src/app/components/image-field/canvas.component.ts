@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 /** fromEvent - создаёт стрим из событий */
-import { fromEvent, Observable, tap } from 'rxjs';
+import { merge, combineLatest, fromEvent, Observable } from 'rxjs';
 import { map, pairwise, switchMap, takeUntil } from 'rxjs/operators';
 import { BrushService } from '../../services/brush.service';
 import { CanvasService } from '../../services/canvas.service';
@@ -23,6 +23,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   /** Находим канвас в шаблоне */
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
+  private isDrawing: boolean = false;
 
   constructor(
     private brush: BrushService,
@@ -40,12 +41,31 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.canvasService.canvasEl = canvasEl;
     this.canvasService.setCanvas();
 
-    /** Стримы для рисования */
+    /** Стримы для рисования - привязываем ивенты к канвасу */
     this.mouseMove$ = fromEvent<MouseEvent>(canvasEl, 'mousemove');
     this.mouseDown$ = fromEvent<MouseEvent>(canvasEl, 'mousedown');
     this.mouseOut$ = fromEvent<MouseEvent>(canvasEl, 'mouseout');
     this.mouseUp$ = fromEvent<MouseEvent>(canvasEl, 'mouseup');
     this.mouseClick$ = fromEvent<MouseEvent>(canvasEl, 'click');
+
+    /** Сохраняем состояние, когда мышка ушла за границу канваса или кнопка отпущена */
+    /** Объединяем стримы, которые вызывают сохранение в один стрим */
+    const stopDrawing$: Observable<any> = merge(this.mouseUp$, this.mouseOut$);
+    /** Сохранение состояния */
+    stopDrawing$.subscribe((data) => {
+      /** Сохраняемся только в режиме рисования */
+      if (this.isDrawing) {
+        console.log(data);
+        /** Сохраняем состояние в историю изменений */
+        this.fileService.saveHistory(
+          this.canvasService.ctx!,
+          this.canvas.nativeElement.width,
+          this.canvas.nativeElement.height,
+        );
+        /** Выключаем режим рисования */
+        this.isDrawing = false;
+      }
+    });
 
     /** Стрим для рисования точек и объектов с координатами и параметрами */
     this.put$ = this.mouseDown$.pipe(
@@ -84,7 +104,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
     /** Стрим для рисования линий с координатами и параметрами */
     this.drawing$ = this.mouseDown$.pipe(
-      /** Если мышка нажата И движется */
+      /** Если кнопка нажата И мышка движется */
       switchMap(() => {
         return this.mouseMove$.pipe(
           /** Возвращаем координаты и объект с параметрами */
@@ -108,6 +128,8 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
     /** Рисуем по координатам */
     this.drawing$.subscribe(([from, to]) => {
+      /** Включаем флаг "рисование в процессе" */
+      this.isDrawing = true;
       /** Получаем из опций аргумента размер линии */
       const { brushSize, brushColor } = from.options;
       /** Устанавливаем размер и цвет */
@@ -126,13 +148,15 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.canvasService.ctx?.stroke();
     });
 
-    this.mouseUp$.subscribe(() => {
-      /** Сохраняем состояние в историю изменений */
-      this.fileService.saveHistory(
-        this.canvasService.ctx!,
-        this.canvas.nativeElement.width,
-        this.canvas.nativeElement.height,
-      );
-    });
+    // this.mouseUp$.subscribe((data) => {
+    //   console.log(data);
+    //   debugger;
+    //   /** Сохраняем состояние в историю изменений */
+    //   this.fileService.saveHistory(
+    //     this.canvasService.ctx!,
+    //     this.canvas.nativeElement.width,
+    //     this.canvas.nativeElement.height,
+    //   );
+    // });
   }
 }
