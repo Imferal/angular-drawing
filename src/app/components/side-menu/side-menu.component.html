@@ -30,8 +30,8 @@
       matInput
       type="color"
       id="background"
-      [(ngModel)]="canvas.canvasColor"
-      (change)="canvas.fillCanvasWithColor()">
+      [(ngModel)]="canvasService.canvasColor"
+      (change)="fillCanvasWithColor()">
   </mat-form-field>
     </mat-card>
 </div>

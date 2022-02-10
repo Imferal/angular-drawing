@@ -6,6 +6,15 @@ import { BrushService } from '../../services/brush.service';
 import { CanvasService } from '../../services/canvas.service';
 import { FileService } from '../../services/file.service';
 
+interface Coords {
+  x: number;
+  y: number;
+  options: {
+    brushSize: number;
+    lineColor: string;
+  };
+}
+
 @Component({
   selector: 'app-image-field',
   templateUrl: './canvas.component.html',
@@ -19,14 +28,15 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   private mouseOut$!: Observable<MouseEvent>;
   private mouseUp$!: Observable<MouseEvent>;
   private drawing$!: Observable<any>;
-  private put$!: Observable<any>;
+  private plotDrawing$!: Observable<any>;
   /** Находим канвас в шаблоне */
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
-  private isDrawing: boolean = false;
+  // private isDrawing: boolean = false;
+  private isPointDrowing: boolean = false;
 
   constructor(
-    private brush: BrushService,
+    private brushService: BrushService,
     private canvasService: CanvasService,
     private fileService: FileService,
   ) {}
@@ -35,6 +45,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     console.log('Запуск image-field...');
   }
 
+  // @ts-ignore
   ngAfterViewInit() {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     /** Отдаём найденный canvas в сервис для дальнейшей работы */
@@ -48,38 +59,36 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.mouseUp$ = fromEvent<MouseEvent>(canvasEl, 'mouseup');
     this.mouseClick$ = fromEvent<MouseEvent>(canvasEl, 'click');
 
-    /** Сохраняем состояние, когда мышка ушла за границу канваса или кнопка отпущена */
-    /** Объединяем стримы, которые вызывают сохранение в один стрим */
-    const stopDrawing$: Observable<any> = merge(this.mouseUp$, this.mouseOut$);
-    /** Сохранение состояния */
-    stopDrawing$.subscribe((data) => {
-      /** Сохраняемся только в режиме рисования */
-      if (this.isDrawing) {
-        console.log(data);
-        /** Сохраняем состояние в историю изменений */
-        this.fileService.saveHistory(
-          this.canvasService.ctx!,
-          this.canvas.nativeElement.width,
-          this.canvas.nativeElement.height,
-        );
-        /** Выключаем режим рисования */
-        this.isDrawing = false;
-      }
+    // /** Сохраняем состояние, когда мышка ушла за границу канваса или кнопка отпущена */
+    // /** Объединяем стримы, которые вызывают сохранение в один стрим */
+    // const stopDrawing$: Observable<any> = merge(this.mouseUp$, this.mouseOut$);
+    // /** Сохранение состояния */
+    this.mouseUp$.subscribe((e: MouseEvent) => {
+      /** Завершаем стрим */
+      this.fileService.saveHistory(
+        e.offsetX,
+        e.offsetY,
+        e.offsetX,
+        e.offsetY,
+        this.brushService.brushSize,
+        this.brushService.brushColor,
+      );
     });
 
-    /** Стрим для рисования точек и объектов с координатами и параметрами */
-    this.put$ = this.mouseDown$.pipe(
+    /** Рисование точки */
+    this.plotDrawing$ = this.mouseDown$.pipe(
+      switchMap(() => this.mouseUp$.pipe(takeUntil(this.mouseMove$))),
       map((e) => ({
         x: e.offsetX,
         y: e.offsetY,
         options: {
-          brushSize: this.brush.brushSize,
-          lineColor: this.brush.brushColor,
+          brushSize: this.brushService.brushSize,
+          lineColor: this.brushService.brushColor,
         },
       })),
     );
 
-    this.put$.subscribe((coords) => {
+    this.plotDrawing$.subscribe((coords) => {
       /** Получаем из опций аргумента размер линии */
       const { brushSize, lineColor } = coords.options;
       this.canvasService.ctx?.beginPath();
@@ -112,8 +121,8 @@ export class CanvasComponent implements AfterViewInit, OnInit {
             x: e.offsetX,
             y: e.offsetY,
             options: {
-              brushSize: this.brush.brushSize,
-              brushColor: this.brush.brushColor,
+              brushSize: this.brushService.brushSize,
+              brushColor: this.brushService.brushColor,
             },
           })),
           /** Сохраняем предыдущие координаты */
@@ -128,8 +137,8 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
     /** Рисуем по координатам */
     this.drawing$.subscribe(([from, to]) => {
-      /** Включаем флаг "рисование в процессе" */
-      this.isDrawing = true;
+      // /** Включаем флаг "рисование в процессе" */
+      // this.isDrawing = true;
       /** Получаем из опций аргумента размер линии */
       const { brushSize, brushColor } = from.options;
       /** Устанавливаем размер и цвет */
@@ -146,6 +155,11 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.canvasService.ctx?.lineTo(to.x, to.y);
       /** Отрисовываем линию по заданным параметрам */
       this.canvasService.ctx?.stroke();
+      /** Сохраняем в историю */
+      this.fileService.saveHistory(from.x, from.y, to.x, to.y, brushSize, brushColor);
+      /** Сообщаем, что последнее действие не было undo (необходимо для
+       * корректной работы отмены/возврата отмены) */
+      this.fileService.lastStepWasUndo = false;
     });
 
     // this.mouseUp$.subscribe((data) => {

@@ -18,8 +18,8 @@
   <button mat-menu-item [mat-menu-trigger-for]="canvasColor">Color</button>
 </mat-menu>
 
-<button mat-button (click)="fileService.undo(canvasService.ctx!)">Undo</button>
-<button mat-button disabled>Redo</button>
+<button mat-button (click)="fileService.undoRedo('undo')">Undo</button>
+<!--<button mat-button (click)="fileService.redo(canvasService.ctx!)">Redo</button>-->
 
 <mat-menu #brushSize>
   <button mat-menu-item (click)="brushService.brushSize = 1">1</button>
@@ -61,19 +61,19 @@
 
 <mat-menu #canvasColor>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#000000')">Black</button>
+          (click)="fillCanvasWithColor('#000000')">Black</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#FFFFFF')">White</button>
+          (click)="fillCanvasWithColor('#FFFFFF')">White</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#FF0000')">Red</button>
+          (click)="fillCanvasWithColor('#FF0000')">Red</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#FF9900')">Orange</button>
+          (click)="fillCanvasWithColor('#FF9900')">Orange</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#FFF400')">Yellow</button>
+          (click)="fillCanvasWithColor('#FFF400')">Yellow</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#00FF00')">Green</button>
+          (click)="fillCanvasWithColor('#00FF00')">Green</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#0000FF')">Blue</button>
+          (click)="fillCanvasWithColor('#0000FF')">Blue</button>
   <button mat-menu-item
-          (click)="canvasService.fillCanvasWithColor('#A000FF')">Purple</button>
+          (click)="fillCanvasWithColor('#A000FF')">Purple</button>
 </mat-menu>

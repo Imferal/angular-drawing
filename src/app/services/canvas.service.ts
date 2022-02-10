@@ -1,5 +1,4 @@
-import { ElementRef, Injectable, ViewChild } from '@angular/core';
-import { fromEvent, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +41,7 @@ export class CanvasService {
     this.ctx = this.canvasEl.getContext('2d')!;
     // /** Устанавливаем форму концов линий */
     // this.ctx.lineJoin = this.ctx.lineCap = 'round';
-    this.ctx.setLineDash([5]);
+    // this.ctx.setLineDash([5]);
 
     /** Получаем размеры канваса - ширину, высоту, позицию на странице, координаты */
     this.rect = this.canvasEl.getBoundingClientRect();
