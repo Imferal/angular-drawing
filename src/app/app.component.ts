@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { map, pairwise, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',

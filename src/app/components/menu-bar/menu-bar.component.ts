@@ -22,15 +22,4 @@ export class MenuBarComponent implements OnInit {
   ngOnInit(): void {
     console.log('Запуск menu-bar...');
   }
-
-  /** Вызов функции заливки холста и сохранения изменений */
-  fillCanvasWithColor(color: string) {
-    this.canvasService.fillCanvasWithColor(color);
-    // this.fileService.saveHistory(
-    //   this.canvasService.ctx!,
-    //   this.canvasService.rect.width,
-    //   this.canvasService.rect.height,
-    //   true,
-    // );
-  }
 }
