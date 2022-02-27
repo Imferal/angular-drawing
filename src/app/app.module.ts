@@ -13,9 +13,10 @@ import { CanvasComponent } from './components/image-field/canvas.component';
 import { MatButtonModule } from '@angular/material/button';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
 import { MatTableModule } from '@angular/material/table';
+import { LongPressDirective } from './directives/long-press.directive';
 
 @NgModule({
-  declarations: [AppComponent, MenuBarComponent, CanvasComponent, SideMenuComponent],
+  declarations: [AppComponent, MenuBarComponent, CanvasComponent, SideMenuComponent, LongPressDirective],
   imports: [
     MatCardModule,
     BrowserModule,

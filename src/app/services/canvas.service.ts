@@ -64,16 +64,27 @@ export class CanvasService {
   }
 
   /** Отменить последнее изменение изображения */
-  public undoRedo = (type: 'undo' | 'redo') => {
-    this.lastStepWasUndo = type === 'undo';
-
-    if (type === 'undo' && this.currentHistoryPosition >= 2) {
+  public undo = () => {
+    this.lastStepWasUndo = true;
+    /** Если есть, что отменять */
+    if (this.currentHistoryPosition >= 2) {
       this.currentHistoryPosition -= 2;
+    } else {
+      return;
     }
 
-    /** Если redo и есть что возвращать */
-    if (type === 'redo') {
+    this.redrawAll();
+  };
+
+  /** Отменить последнее изменение изображения */
+  public redo = () => {
+    this.lastStepWasUndo = false;
+
+    /** Если есть что возвращать */
+    if (this.currentHistoryPosition + 2 <= this.drawHistory.length) {
       this.currentHistoryPosition += 2;
+    } else {
+      return;
     }
 
     this.redrawAll();

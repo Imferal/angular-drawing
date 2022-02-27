@@ -18,18 +18,23 @@
   <button mat-menu-item [mat-menu-trigger-for]="canvasColor">Color</button>
 </mat-menu>
 
-<button mat-button
-  (click)="canvasService.undoRedo('undo')"
-  [disabled]="canvasService.currentHistoryPosition === 0">
+<button
+  mat-button
+  appLongPress
+  (longPressing)="canvasService.undo()"
+  [style.color] = "canvasService.currentHistoryPosition === 0 ? 'gray' : 'black'">
   Undo
 </button>
 
 <button
   mat-button
-  (click)="canvasService.undoRedo('redo')"
-  [disabled]="canvasService.currentHistoryPosition >= canvasService.drawHistory.length">
+  appLongPress
+  (longPressing)="canvasService.redo()"
+  [style.color] = "canvasService.currentHistoryPosition >= canvasService.drawHistory.length ? 'gray' : 'black'">
   Redo
 </button>
+
+<span>HistoryPosition: {{ canvasService.currentHistoryPosition}}   ArrayLength: {{ canvasService.drawHistory.length }}</span>
 
 <mat-menu #brushSize>
   <button mat-menu-item (click)="brushService.brushSize = 1">1</button>
