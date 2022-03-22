@@ -5,8 +5,6 @@ import { Injectable } from '@angular/core';
 })
 export class BrushService {
   /** Параметры кисти */
-  public brushColor: string = '#0ED840';
-  public brushSize: number = 8;
-
-  constructor() {}
+  public brushColor = '#0ED840';
+  public brushSize = 8;
 }

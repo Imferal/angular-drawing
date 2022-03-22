@@ -15,7 +15,6 @@ export class CanvasService {
   /** Очередь изменений изображения */
   public drawHistory: Array<Point> = [];
   public currentHistoryPosition = 0;
-  public lastStepWasUndo = false;
   /** Создаём контекст */
   public ctx!: CanvasRenderingContext2D | null;
   public canvasEl!: HTMLCanvasElement;
@@ -34,9 +33,6 @@ export class CanvasService {
   /** Заливка изображения цветом */
   public fillCanvasWithColor(color: string = this.canvasColor) {
     this.canvasColor = color;
-    // /** Добавляем параметры фона в массив изменений на первое место */
-    // this.ctx!.fillStyle = this.canvasColor;
-    // this.ctx!.fillRect(0, 0, this.rect.width, this.rect.height);
     /** Перерисовываем изображение */
     this.redrawAll();
   }
@@ -65,21 +61,17 @@ export class CanvasService {
 
   /** Отменить последнее изменение изображения */
   public undo = () => {
-    this.lastStepWasUndo = true;
     /** Если есть, что отменять */
     if (this.currentHistoryPosition >= 2) {
       this.currentHistoryPosition -= 2;
     } else {
       return;
     }
-
     this.redrawAll();
   };
 
   /** Отменить последнее изменение изображения */
   public redo = () => {
-    this.lastStepWasUndo = false;
-
     /** Если есть что возвращать */
     if (this.currentHistoryPosition + 2 <= this.drawHistory.length) {
       this.currentHistoryPosition += 2;
@@ -103,6 +95,8 @@ export class CanvasService {
       this.ctx?.beginPath();
       /** Координаты начала линии */
       this.ctx?.moveTo(from.x, from.y);
+      /** Задаём цвет линии */
+      this.ctx!.strokeStyle = from.color;
       /** Задаём ширину линии */
       this.ctx!.lineWidth = from.size;
       /** Заполняем линию (делаем её сплошной, без "полосатости") */
@@ -131,7 +125,51 @@ export class CanvasService {
     this.drawHistory.push({ x: fromX, y: fromY, size, color, mode: 'begin' });
     this.drawHistory.push({ x: toX, y: toY, size, color, mode: 'end' });
     this.currentHistoryPosition += 2;
-    console.log('history: ', this.drawHistory);
-    console.log('currentHistoryPosition: ', this.currentHistoryPosition);
+  }
+
+  /** Сохраняем изображение в выбранном формате */
+  public saveImage() {
+    /** Получаем данные изображения и меняем mime-тип на application/octet-stream */
+    const canvasDataUrl = this.canvasEl
+      .toDataURL()
+      .replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+    /** Создаём "ссылку" */
+    const link = document.createElement('a');
+    /** Устанавливаем для нашей ссылки нужные параметры */
+    /** Путь к нашей картинке */
+    link.setAttribute('href', canvasDataUrl);
+    /** Открыть в новой вкладке */
+    link.setAttribute('target', '_blank');
+    /** Тип - ссылка сохраняет файл с заданным названием */
+    link.setAttribute('download', 'masterpiece.png');
+
+    /** Создаём событие, имитирующее "клик" */
+    const clickEvent = document.createEvent('MouseEvents');
+    clickEvent.initEvent('click', true, true);
+
+    /** "Кликаем" по нашей виртуальной ссылке виртуальным кликом */
+    link.dispatchEvent(clickEvent);
+  }
+
+  /** Новое изображение */
+  public newImage(): void {
+    this.drawHistory = [];
+    this.currentHistoryPosition = 0;
+    this.clear();
+  }
+
+  /** Сохраняем объект с изменениями канваса и состояние холста */
+  public saveCanvas(): void {
+    localStorage.setItem('canvasColor', this.canvasColor);
+    localStorage.setItem('canvas', JSON.stringify(this.drawHistory));
+    localStorage.setItem('currentHistoryPosition', String(this.currentHistoryPosition));
+  }
+
+  /** Загружаем объект с изменениями канваса и состояние холста */
+  public loadCanvas(): void {
+    this.canvasColor = localStorage.getItem('canvasColor') as string;
+    this.drawHistory = JSON.parse(localStorage.getItem('canvas')!);
+    this.currentHistoryPosition = Number(localStorage.getItem('currentHistoryPosition')!);
+    this.redrawAll();
   }
 }

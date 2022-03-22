@@ -20,7 +20,6 @@ export class LongPressDirective {
   }
 
   loop(event: MouseEvent) {
-    console.log('Loop works...');
     this.timeout = setTimeout(() => {
       this.longPressing.emit(event);
       this.loop(event);
@@ -29,6 +28,5 @@ export class LongPressDirective {
 
   endPress() {
     clearTimeout(this.timeout);
-    console.log('endPress');
   }
 }

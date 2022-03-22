@@ -16,7 +16,13 @@ import { MatTableModule } from '@angular/material/table';
 import { LongPressDirective } from './directives/long-press.directive';
 
 @NgModule({
-  declarations: [AppComponent, MenuBarComponent, CanvasComponent, SideMenuComponent, LongPressDirective],
+  declarations: [
+    AppComponent,
+    MenuBarComponent,
+    CanvasComponent,
+    SideMenuComponent,
+    LongPressDirective,
+  ],
   imports: [
     MatCardModule,
     BrowserModule,

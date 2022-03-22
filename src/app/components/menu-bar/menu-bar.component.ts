@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { BrushService } from '../../services/brush.service';
 import { CanvasService } from '../../services/canvas.service';
 
@@ -7,14 +7,10 @@ import { CanvasService } from '../../services/canvas.service';
   templateUrl: './menu-bar.component.html',
   styleUrls: ['./menu-bar.component.scss'],
 })
-export class MenuBarComponent implements OnInit {
+export class MenuBarComponent {
   /** Находим канвас в шаблоне */
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
 
   constructor(public brushService: BrushService, public canvasService: CanvasService) {}
-
-  ngOnInit(): void {
-    console.log('Запуск menu-bar...');
-  }
 }

@@ -1,17 +1,16 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 /** fromEvent - создаёт стрим из событий */
-import { merge, combineLatest, fromEvent, Observable } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { map, pairwise, switchMap, takeUntil } from 'rxjs/operators';
 import { BrushService } from '../../services/brush.service';
 import { CanvasService } from '../../services/canvas.service';
-import { FileService } from '../../services/file.service';
 
 @Component({
   selector: 'app-image-field',
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss'],
 })
-export class CanvasComponent implements AfterViewInit, OnInit {
+export class CanvasComponent implements AfterViewInit {
   /** Слушаем события мыши */
   private mouseClick$!: Observable<MouseEvent>;
   private mouseMove$!: Observable<MouseEvent>;
@@ -25,10 +24,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   canvas!: ElementRef<HTMLCanvasElement>;
 
   constructor(private brushService: BrushService, private canvasService: CanvasService) {}
-
-  ngOnInit(): void {
-    console.log('Запуск image-field...');
-  }
 
   // @ts-ignore
   ngAfterViewInit() {
@@ -137,9 +132,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.canvasService.ctx?.stroke();
       /** Сохраняем в историю */
       this.canvasService.saveHistory(from.x, from.y, to.x, to.y, brushSize, brushColor);
-      /** Сообщаем, что последнее действие не было undo (необходимо для
-       * корректной работы отмены/возврата действия) */
-      this.canvasService.lastStepWasUndo = false;
     });
   }
 }
